@@ -8,9 +8,9 @@
   const modes = {
     fresh: "fresh",
     idle: "idle",
-    enteringText: "enteringText",
+    editingText: "editingText",
     countingDown: "countingDown",
-    enteringCountdownMinutes: "enteringCountdownMinutes"
+    editingCountdownMinutes: "editingCountdownMinutes"
   };
 
   const events = {
@@ -22,7 +22,7 @@
     "What are you going to do <strong>right now</strong>?";
 
   // Simple state machine for `mode`
-  // fresh => enteringText <=> countingDown <=> enteringCountdownMinutes
+  // fresh => editingText <=> countingDown <=> editingCountdownMinutes
   let mode = "fresh";
   let isUserGenerated = false;
   let content = placeholderContent;
@@ -43,19 +43,19 @@
     if (event === events.return) {
       switch (oldMode) {
         case modes.fresh:
-          return modes.enteringText;
+          return modes.editingText;
 
         case modes.idle:
-          return modes.enteringText;
+          return modes.editingText;
 
-        case modes.enteringText:
+        case modes.editingText:
           return modes.countingDown;
 
-        case modes.enteringCountdownMinutes:
+        case modes.editingCountdownMinutes:
           return modes.countingDown;
 
         case modes.countingDown:
-          return modes.enteringText;
+          return modes.editingText;
 
         default:
           throw "Unknown mode";
@@ -66,16 +66,16 @@
           return modes.fresh;
 
         case modes.idle:
-          return modes.enteringText;
+          return modes.editingText;
 
-        case modes.enteringText:
-          return modes.enteringCountdownMinutes;
+        case modes.editingText:
+          return modes.editingCountdownMinutes;
 
-        case modes.enteringCountdownMinutes:
+        case modes.editingCountdownMinutes:
           return modes.countingDown;
 
         case modes.countingDown:
-          return modes.enteringCountdownMinutes;
+          return modes.editingCountdownMinutes;
 
         default:
           throw "Unknown mode";
@@ -85,7 +85,7 @@
 
   const resetContent = () => {
     content = placeholderContent;
-    mode = modes.enteringText;
+    mode = modes.editingText;
     isUserGenerated = false;
   };
 
@@ -113,10 +113,10 @@
 
     if (isUninked.test(key)) return;
 
-    if (mode === modes.enteringText) {
+    if (mode === modes.editingText) {
       content = content === placeholderContent ? key : content + key;
       isUserGenerated = true; // This is weak. Refactor, please!
-    } else if (mode === modes.enteringCountdownMinutes && /^[0-9]$/.test(key)) {
+    } else if (mode === modes.editingCountdownMinutes && /^[0-9]$/.test(key)) {
       countdownMinutes = countdownMinutes + key;
     }
   };
