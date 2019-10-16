@@ -3,7 +3,7 @@
   import Mousetrap from "mousetrap";
   import { isUninked } from "./uninked-keypresses.js";
 
-  const debug = true;
+  const debug = false;
 
   const modes = {
     fresh: "fresh",
@@ -171,22 +171,34 @@
   };
 
   // let stopKeyPresses = () => document.removeEventListener("keydown", keydownHandler);
+
+  $: mainContentStyle =
+    mode === modes.editingText
+      ? "focussed-content"
+      : mode === modes.editingCountdownMinutes
+      ? "dimmed-content"
+      : "idle-content";
+
+  $: timerStyle =
+    mode === modes.editingText
+      ? "dimmed-timer"
+      : mode === modes.editingCountdownMinutes
+      ? "focussed-timer"
+      : "idle-timer";
 </script>
 
 <style>
   main {
-    font-size: 5rem;
+    position: absolute;
+    width: 100%;
     text-align: center;
     margin: 0 auto;
     margin-top: 20vh;
   }
 
-  .black {
-    color: black;
-  }
-
   .gray {
     color: lightgray;
+    transition: font-size 250ms;
   }
 
   .help {
@@ -199,7 +211,36 @@
 
   .timer {
     margin-top: 5rem;
+  }
+
+  .focussed-content {
+    font-size: 8rem;
+    transition: font-size 250ms;
+  }
+
+  .dimmed-content {
     font-size: 2rem;
+    transition: font-size 250ms;
+  }
+
+  .idle-content {
+    font-size: 5rem;
+    transition: font-size 250ms;
+  }
+
+  .focussed-timer {
+    font-size: 7rem;
+    transition: font-size 250ms;
+  }
+
+  .dimmed-timer {
+    font-size: 1rem;
+    transition: font-size 250ms;
+  }
+
+  .idle-timer {
+    font-size: 3rem;
+    transition: font-size 250ms;
   }
 
   .debug {
@@ -212,30 +253,28 @@
 </style>
 
 <main>
-  {#if content.length > 0}
-    <div class="black">
+  <div class={mainContentStyle}>
+    {#if content.length > 0}
       {@html content}
-    </div>
-  {:else}
-    <div class="gray">
-      What are you going to do
-      <strong>right now</strong>
-      ?
-    </div>
-  {/if}
+    {:else}
+      <span class="gray">
+        What are you going to do
+        <strong>right now</strong>
+        ?
+      </span>
+    {/if}
+  </div>
 
-  {#if mode === modes.countingDown}
-    <div class="timer black">
+  <div class={`timer ${timerStyle}`}>
+    {#if mode === modes.countingDown}
       {`${('0' + h(milliseconds - elapsed)).slice(-2)}:${('0' + m(milliseconds - elapsed)).slice(-2)}:${('0' + s(milliseconds - elapsed)).slice(-2)}`}
-    </div>
-  {:else if mode === modes.editingCountdownMinutes}
-    <div class="timer">
+    {:else if mode === modes.editingCountdownMinutes}
       {`which should take about ${countdownMinutes} minutes`}
-    </div>
-  {/if}
-
-  <div class="help">Ctrl+Q to Quit</div>
+    {/if}
+  </div>
 </main>
+
+<div class="help">Ctrl+Q to Quit</div>
 
 {#if debug}
   <div class="debug">
