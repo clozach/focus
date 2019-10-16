@@ -3,8 +3,8 @@
   import Mousetrap from "mousetrap";
   import { isUninked } from "./uninked-keypresses.js";
 
-  const debug = true;
-  const version = "v3";
+  let debug = false;
+  const version = "v4";
 
   const modes = {
     idle: "idle",
@@ -151,11 +151,16 @@
     }
   };
 
+  const toggleDebug = () => {
+    debug = !debug;
+  };
+
   onMount(() => {
     Mousetrap.bind(events.return, returnHandler);
     Mousetrap.bind(events.tab, tabHandler);
     Mousetrap.bind("command+backspace", resetContent);
     Mousetrap.bind("backspace", trimLastCharacter);
+    Mousetrap.bind("ctrl ctrl", toggleDebug);
     setKeydownHandler();
   });
 
