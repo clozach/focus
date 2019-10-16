@@ -137,6 +137,9 @@
   const resetContent = () => {
     content = "";
     mode = modes.idle;
+    milliseconds = 0;
+    countdownMinutes = 0;
+    elapsed = 0;
     cancelAnimationFrame(frame);
   };
 
