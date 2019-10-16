@@ -22,17 +22,42 @@
   // fresh => editingText <=> countingDown <=> editingCountdownMinutes
   let mode = "fresh";
   let content = "";
+  let milliseconds = 0;
   let countdownMinutes = 0;
 
-  $: Mousetrap.bind("return", () => returnHandler());
-  $: Mousetrap.bind("tab", () => tabHandler());
+  $: seconds = Math.floor(milliseconds / 1000) % 60;
+  $: minutes = Math.floor(milliseconds / 60 / 1000) % 60;
+  $: hours = Math.floor(milliseconds / 60 / 60 / 1000);
+
+  let setMinutes = minutes => {
+    milliseconds = minutes * 60 * 1000;
+  };
 
   function returnHandler() {
-    mode = modeFrom(events.return, mode);
+    const fullscreen = () => {
+      // This take 2 hits of the [return] key…no idea why!
+      var docElm = document.documentElement;
+      if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+      } else if (docElm.mozRequestFullScreen) {
+        docElm.mozRequestFullScreen();
+      } else if (docElm.webkitRequestFullScreen) {
+        docElm.webkitRequestFullScreen();
+      }
+      mode = modeFrom("return", mode);
+    };
+
+    if (mode === modes.fresh) {
+      fullscreen();
+    } else {
+      mode = modeFrom(events.return, mode);
+    }
   }
 
   function tabHandler() {
     mode = modeFrom(events.tab, mode);
+    milliseconds = 0;
+    countdownMinutes = 0;
   }
 
   function modeFrom(event, oldMode) {
@@ -85,22 +110,10 @@
   };
 
   onMount(() => {
-    const fullscreen = () => {
-      // This take 2 hits of the [return] key…no idea why!
-      var docElm = document.documentElement;
-      if (docElm.requestFullscreen) {
-        docElm.requestFullscreen();
-      } else if (docElm.mozRequestFullScreen) {
-        docElm.mozRequestFullScreen();
-      } else if (docElm.webkitRequestFullScreen) {
-        docElm.webkitRequestFullScreen();
-      }
-      mode = modeFrom("return", mode);
-    };
-
-    Mousetrap.bind("return", fullscreen);
+    Mousetrap.bind(events.return, returnHandler);
+    Mousetrap.bind(events.tab, () => tabHandler);
     Mousetrap.bind("command+backspace", resetContent);
-    displayAndResetKeyPresses();
+    setKeydownHandler();
   });
 
   const keydownHandler = event => {
@@ -112,15 +125,15 @@
       content = content + key;
     } else if (mode === modes.editingCountdownMinutes && /^[0-9]$/.test(key)) {
       countdownMinutes = countdownMinutes + key;
+      setMinutes(countdownMinutes);
     }
   };
 
-  const displayAndResetKeyPresses = () => {
+  const setKeydownHandler = () => {
     document.addEventListener("keydown", keydownHandler);
   };
 
-  let stopKeyPresses = () =>
-    document.removeEventListener("keydown", keydownHandler);
+  // let stopKeyPresses = () => document.removeEventListener("keydown", keydownHandler);
 </script>
 
 <style>
@@ -147,6 +160,11 @@
     color: lightgray;
   }
 
+  .timer {
+    margin-top: 5rem;
+    font-size: 2rem;
+  }
+
   .debug {
     position: absolute;
     bottom: 3rem;
@@ -158,7 +176,9 @@
 
 <main>
   {#if content.length > 0}
-    {@html content}
+    <div class="black">
+      {@html content}
+    </div>
   {:else}
     <div class="gray">
       What are you going to do
@@ -166,6 +186,10 @@
       ?
     </div>
   {/if}
+  {#if mode === modes.countingDown || mode === modes.editingCountdownMinutes || milliseconds > 0}
+    <div class="timer">{`${hours}:${minutes}:${seconds}`}</div>
+  {/if}
+
   <div class="help">Ctrl+Q to Quit</div>
 </main>
 
@@ -178,6 +202,26 @@
     <div>
       <strong>mode:</strong>
       {mode}
+    </div>
+    <div>
+      <strong>milliseconds:</strong>
+      {milliseconds}
+    </div>
+    <div>
+      <strong>seconds:</strong>
+      {seconds}
+    </div>
+    <div>
+      <strong>minutes:</strong>
+      {minutes}
+    </div>
+    <div>
+      <strong>countdownMinutes:</strong>
+      {countdownMinutes}
+    </div>
+    <div>
+      <strong>hours:</strong>
+      {hours}
     </div>
   </div>
 {/if}
