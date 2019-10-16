@@ -3,7 +3,7 @@
   import Mousetrap from "mousetrap";
   import { isUninked } from "./uninked-keypresses.js";
 
-  const debug = false;
+  const debug = true;
 
   const modes = {
     idle: "idle",
@@ -38,9 +38,11 @@
   };
 
   let setMinutes = minutes => {
-    milliseconds = minutes * 60 * 1000;
-    // milliseconds = minutes * 1000; // Uncomment for testing in seconds
-
+    if (!debug) {
+      milliseconds = minutes * 60 * 1000;
+    } else {
+      milliseconds = minutes * 1000; // Uncomment for testing in seconds
+    }
     // https://svelte.dev/examples#7guis-timer
     // Invalidate the timer
     cancelAnimationFrame(frame);
@@ -269,7 +271,7 @@
     {#if mode === modes.countingDown}
       {`${('0' + h(milliseconds - elapsed)).slice(-2)}:${('0' + m(milliseconds - elapsed)).slice(-2)}:${('0' + s(milliseconds - elapsed)).slice(-2)}`}
     {:else if mode === modes.editingCountdownMinutes}
-      {`which should take about ${countdownMinutes} minutes`}
+      {`which should take about ${countdownMinutes} ${debug ? 'seconds' : 'minutes'}`}
     {/if}
   </div>
 </main>
