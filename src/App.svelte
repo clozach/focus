@@ -68,7 +68,6 @@
       } else if (docElm.webkitRequestFullScreen) {
         docElm.webkitRequestFullScreen();
       }
-      mode = modeFrom("return", mode);
       justStarted = false;
     };
 
