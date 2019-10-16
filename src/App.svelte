@@ -265,7 +265,7 @@
     width: 50%;
     background-color: hsl(41, 80%, 95%);
     padding: 3rem;
-    width: fit-content;
+    width: 15rem;
     line-height: 1.5;
   }
 
