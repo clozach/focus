@@ -4,6 +4,7 @@
   import { isUninked } from "./uninked-keypresses.js";
 
   const debug = true;
+  const version = "v2";
 
   const modes = {
     idle: "idle",
@@ -317,10 +318,10 @@
   {/if}
 </div>
 
-<div class="version">v1</div>
+<div class="version">{version}</div>
 
 {#if debug}
-  <div class="debug-version">v1</div>
+  <div class="debug-version">{version}</div>
   <div class="debug">
     <div>
       <strong>content:</strong>
