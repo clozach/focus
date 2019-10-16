@@ -4,7 +4,7 @@
   import { isUninked } from "./uninked-keypresses.js";
 
   const debug = true;
-  const version = "v2";
+  const version = "v3";
 
   const modes = {
     idle: "idle",
@@ -194,7 +194,7 @@
       ? "focussed-timer"
       : "idle-timer";
 
-    resetContent();
+  resetContent();
   $: if (elapsed > 0 && elapsed >= milliseconds) {
   }
 </script>
