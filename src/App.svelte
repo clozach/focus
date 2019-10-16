@@ -18,14 +18,10 @@
     tab: "tab"
   };
 
-  const placeholderContent =
-    "What are you going to do <strong>right now</strong>?";
-
   // Simple state machine for `mode`
   // fresh => editingText <=> countingDown <=> editingCountdownMinutes
   let mode = "fresh";
-  let isUserGenerated = false;
-  let content = placeholderContent;
+  let content = "";
   let countdownMinutes = 0;
 
   $: Mousetrap.bind("return", () => returnHandler());
@@ -84,9 +80,8 @@
   }
 
   const resetContent = () => {
-    content = placeholderContent;
+    content = "";
     mode = modes.editingText;
-    isUserGenerated = false;
   };
 
   onMount(() => {
@@ -114,8 +109,7 @@
     if (isUninked.test(key)) return;
 
     if (mode === modes.editingText) {
-      content = content === placeholderContent ? key : content + key;
-      isUserGenerated = true; // This is weak. Refactor, please!
+      content = content + key;
     } else if (mode === modes.editingCountdownMinutes && /^[0-9]$/.test(key)) {
       countdownMinutes = countdownMinutes + key;
     }
@@ -162,8 +156,16 @@
   }
 </style>
 
-<main class={isUserGenerated ? 'black' : 'gray'}>
-  {@html content}
+<main>
+  {#if content.length > 0}
+    {@html content}
+  {:else}
+    <div class="gray">
+      What are you going to do
+      <strong>right now</strong>
+      ?
+    </div>
+  {/if}
   <div class="help">Ctrl+Q to Quit</div>
 </main>
 
@@ -176,10 +178,6 @@
     <div>
       <strong>mode:</strong>
       {mode}
-    </div>
-    <div>
-      <strong>isUserGenerated:</strong>
-      {isUserGenerated}
     </div>
   </div>
 {/if}
