@@ -144,7 +144,11 @@
   };
 
   const trimLastCharacter = () => {
-    content = content.slice(0, -1);
+    if (mode === modes.editingText) {
+      content = content.slice(0, -1);
+    } else if (mode === modes.editingCountdownMinutes) {
+      countdownMinutes = countdownMinutes.slice(0, -1);
+    }
   };
 
   onMount(() => {
