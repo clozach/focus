@@ -17,6 +17,7 @@
     tab: "tab"
   };
 
+  let justStarted = true;
   let mode = "idle";
   let content = "";
   let milliseconds = 0;
@@ -65,6 +66,7 @@
         docElm.webkitRequestFullScreen();
       }
       mode = modeFrom("return", mode);
+      justStarted = false;
     };
 
     if (!document.fullscreenElement) {
@@ -266,7 +268,24 @@
   </div>
 </main>
 
-<div class="help">Ctrl+Q to Quit</div>
+<div class="help">
+  {#if justStarted}
+    Press [return] to begin
+  {:else}
+    {#if mode === modes.editingText}
+      Type to edit text
+      <div>[return] : Accept text</div>
+      <div>[tab] : Edit timer</div>
+    {:else if mode === modes.editingCountdownMinutes}
+      Type digits to edit timer
+      <div>[return] or [tab] : Accept timer duration</div>
+    {:else if mode === modes.countingDown}
+      <div>[return] : Edit text</div>
+      <div>[tab] : Restart timer</div>
+    {/if}
+    <div>[⌘+backspace] : Reset all</div>
+  {/if}
+</div>
 
 {#if debug}
   <div class="debug">
