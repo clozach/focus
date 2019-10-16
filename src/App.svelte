@@ -116,7 +116,7 @@
     } else if (event === events.tab) {
       switch (oldMode) {
         case modes.idle:
-          return modes.editingText;
+          return modes.editingCountdownMinutes;
 
         case modes.editingText:
           return modes.editingCountdownMinutes;
@@ -247,12 +247,31 @@
     transition: font-size 250ms;
   }
 
+  .version {
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    color: lightgray;
+  }
+
   .debug {
     position: absolute;
     bottom: 3rem;
     right: 3rem;
     color: gray;
     width: 50%;
+    background-color: hsl(41, 80%, 95%);
+    padding: 3rem;
+    width: fit-content;
+    line-height: 1.5;
+  }
+
+  .debug-version {
+    font-size: 6rem;
+    color: coral;
+    font-weight: 800;
+    background-color: hsl(41, 80%, 95%);
   }
 </style>
 
@@ -297,7 +316,10 @@
   {/if}
 </div>
 
+<div class="version">v1</div>
+
 {#if debug}
+  <div class="debug-version">v1</div>
   <div class="debug">
     <div>
       <strong>content:</strong>
