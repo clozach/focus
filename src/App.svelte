@@ -198,6 +198,7 @@
     text-align: center;
     margin: 0 auto;
     margin-top: 20vh;
+    font-family: "Special Elite";
   }
 
   .gray {
