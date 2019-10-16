@@ -3,8 +3,9 @@
   import Mousetrap from "mousetrap";
   import { isUninked } from "./uninked-keypresses.js";
 
-  let debug = false;
-  const version = "v4";
+  const debugModes = ["off", "minutes", "seconds"];
+  let debug = "off";
+  const version = "v5";
 
   const modes = {
     idle: "idle",
@@ -39,10 +40,10 @@
   };
 
   let setMinutes = minutes => {
-    if (!debug) {
-      milliseconds = minutes * 60 * 1000;
+    if (debug === "seconds") {
+      milliseconds = minutes * 1000;
     } else {
-      milliseconds = minutes * 1000; // Uncomment for testing in seconds
+      milliseconds = minutes * 60 * 1000;
     }
     // https://svelte.dev/examples#7guis-timer
     // Invalidate the timer
@@ -152,7 +153,7 @@
   };
 
   const toggleDebug = () => {
-    debug = !debug;
+    debug = debugModes[debugModes.indexOf(debug) + 1];
   };
 
   onMount(() => {
@@ -306,7 +307,7 @@
     {#if mode === modes.countingDown}
       {`${('0' + h(milliseconds - elapsed)).slice(-2)}:${('0' + m(milliseconds - elapsed)).slice(-2)}:${('0' + s(milliseconds - elapsed)).slice(-2)}`}
     {:else if mode === modes.editingCountdownMinutes}
-      {`which should take about ${countdownMinutes} ${debug ? 'seconds' : 'minutes'}`}
+      {`which should take about ${countdownMinutes} ${debug === 'seconds' ? 'seconds' : 'minutes'}`}
     {/if}
   </div>
 </main>
@@ -332,7 +333,7 @@
 
 <div class="version">{version}</div>
 
-{#if debug}
+{#if debug !== 'off'}
   <div class="debug-version">{version}</div>
   <div class="debug">
     <div>
