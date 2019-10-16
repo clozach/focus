@@ -91,6 +91,7 @@
     }
 
     mode = modeFrom(events.tab, mode);
+    return false;
   }
 
   function modeFrom(event, oldMode) {
