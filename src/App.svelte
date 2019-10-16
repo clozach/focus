@@ -142,10 +142,15 @@
     mode = modes.editingText;
   };
 
+  const trimLastCharacter = () => {
+    content = content.slice(0, -1);
+  };
+
   onMount(() => {
     Mousetrap.bind(events.return, returnHandler);
     Mousetrap.bind(events.tab, tabHandler);
     Mousetrap.bind("command+backspace", resetContent);
+    Mousetrap.bind("backspace", trimLastCharacter);
     setKeydownHandler();
   });
 
