@@ -39,6 +39,7 @@
 
   let setMinutes = minutes => {
     milliseconds = minutes * 60 * 1000;
+    // milliseconds = minutes * 1000; // Uncomment for testing in seconds
 
     // https://svelte.dev/examples#7guis-timer
     // Invalidate the timer
@@ -134,6 +135,7 @@
   const resetContent = () => {
     content = "";
     mode = modes.editingText;
+    cancelAnimationFrame(frame);
   };
 
   const trimLastCharacter = () => {
@@ -179,6 +181,10 @@
       : mode === modes.editingCountdownMinutes
       ? "focussed-timer"
       : "idle-timer";
+
+  $: if (elapsed >= milliseconds) {
+    resetContent();
+  }
 </script>
 
 <style>
