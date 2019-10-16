@@ -24,13 +24,36 @@
   let content = "";
   let milliseconds = 0;
   let countdownMinutes = 0;
+  let lastTime = window.performance.now();
+  let elapsed = 0;
+  let frame;
 
-  $: seconds = Math.floor(milliseconds / 1000) % 60;
-  $: minutes = Math.floor(milliseconds / 60 / 1000) % 60;
-  $: hours = Math.floor(milliseconds / 60 / 60 / 1000);
+  const s = mils => {
+    return Math.floor(mils / 1000) % 60;
+  };
+
+  const m = mils => {
+    return Math.floor(mils / 60 / 1000) % 60;
+  };
+  const h = mils => {
+    return Math.floor(mils / 60 / 60 / 1000);
+  };
 
   let setMinutes = minutes => {
     milliseconds = minutes * 60 * 1000;
+
+    // https://svelte.dev/examples#7guis-timer
+    // Invalidate the timer
+    cancelAnimationFrame(frame);
+    // Start the timer
+    (function update() {
+      frame = requestAnimationFrame(update);
+
+      const time = window.performance.now();
+      elapsed += Math.min(time - lastTime, milliseconds - elapsed);
+
+      lastTime = time;
+    })();
   };
 
   function returnHandler() {
@@ -49,15 +72,25 @@
 
     if (mode === modes.fresh) {
       fullscreen();
-    } else {
-      mode = modeFrom(events.return, mode);
+      return;
     }
+
+    if (mode === modes.editingCountdownMinutes) {
+      setMinutes(countdownMinutes);
+    }
+
+    mode = modeFrom(events.return, mode);
   }
 
   function tabHandler() {
+    if (mode === modes.editingCountdownMinutes) {
+      setMinutes(countdownMinutes);
+    } else {
+      countdownMinutes = 0;
+      setMinutes(countdownMinutes);
+    }
+
     mode = modeFrom(events.tab, mode);
-    milliseconds = 0;
-    countdownMinutes = 0;
   }
 
   function modeFrom(event, oldMode) {
@@ -111,7 +144,7 @@
 
   onMount(() => {
     Mousetrap.bind(events.return, returnHandler);
-    Mousetrap.bind(events.tab, () => tabHandler);
+    Mousetrap.bind(events.tab, tabHandler);
     Mousetrap.bind("command+backspace", resetContent);
     setKeydownHandler();
   });
@@ -124,8 +157,7 @@
     if (mode === modes.editingText) {
       content = content + key;
     } else if (mode === modes.editingCountdownMinutes && /^[0-9]$/.test(key)) {
-      countdownMinutes = countdownMinutes + key;
-      setMinutes(countdownMinutes);
+      countdownMinutes = countdownMinutes == 0 ? key : countdownMinutes + key;
     }
   };
 
@@ -186,8 +218,15 @@
       ?
     </div>
   {/if}
-  {#if mode === modes.countingDown || mode === modes.editingCountdownMinutes || milliseconds > 0}
-    <div class="timer">{`${hours}:${minutes}:${seconds}`}</div>
+
+  {#if mode === modes.countingDown}
+    <div class="timer black">
+      {`${('0' + h(milliseconds - elapsed)).slice(-2)}:${('0' + m(milliseconds - elapsed)).slice(-2)}:${('0' + s(milliseconds - elapsed)).slice(-2)}`}
+    </div>
+  {:else if mode === modes.editingCountdownMinutes}
+    <div class="timer">
+      {`which should take about ${countdownMinutes} minutes`}
+    </div>
   {/if}
 
   <div class="help">Ctrl+Q to Quit</div>
@@ -209,11 +248,11 @@
     </div>
     <div>
       <strong>seconds:</strong>
-      {seconds}
+      {s(milliseconds)}
     </div>
     <div>
       <strong>minutes:</strong>
-      {minutes}
+      {m(milliseconds)}
     </div>
     <div>
       <strong>countdownMinutes:</strong>
@@ -221,7 +260,11 @@
     </div>
     <div>
       <strong>hours:</strong>
-      {hours}
+      {h(milliseconds)}
+    </div>
+    <div>
+      <strong>elapsed:</strong>
+      {elapsed}
     </div>
   </div>
 {/if}
