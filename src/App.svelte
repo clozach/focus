@@ -28,6 +28,7 @@
   let elapsed = 0;
   let frame;
   let lastTimerExpirationDate = new Date();
+  let now = lastTimerExpirationDate; // Point being, it's a Date.
 
   const s = mils => {
     return Math.floor(mils / 1000) % 60;
@@ -186,8 +187,17 @@
   };
 
   const formatTime = date => {
-    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    return `${("0" + date.getHours()).slice(-2)}:${(
+      "0" + date.getMinutes()
+    ).slice(-2)}:${("0" + date.getSeconds()).slice(-2)}`;
   };
+
+  const updateNow = () => {
+    now = formatTime(new Date());
+    setTimeout(() => updateNow(), 1000);
+  };
+
+  updateNow();
 
   // let stopKeyPresses = () => document.removeEventListener("keydown", keydownHandler);
 
@@ -274,6 +284,7 @@
     bottom: 3rem;
     right: 3rem;
     color: lightgray;
+    text-align: right;
   }
 
   .debug {
@@ -281,10 +292,9 @@
     bottom: 3rem;
     right: 3rem;
     color: gray;
-    width: 50%;
     background-color: hsl(41, 80%, 95%);
     padding: 3rem;
-    width: 15rem;
+    width: 16rem;
     line-height: 1.5;
   }
 
@@ -339,7 +349,9 @@
 
 {#if debug === 'off'}
   <div class="version">
-    Last Timeout: {formatTime(lastTimerExpirationDate)} ({version})
+    <div>{version}</div>
+    <div>Now: {now}</div>
+    <div>Last Timeout: {formatTime(lastTimerExpirationDate)}</div>
   </div>
 {/if}
 
@@ -377,6 +389,10 @@
     <div>
       <strong>elapsed:</strong>
       {elapsed}
+    </div>
+    <div>
+      <strong>Now:</strong>
+      {now}
     </div>
     <div>
       <strong>lastTimerExpirationDate:</strong>
