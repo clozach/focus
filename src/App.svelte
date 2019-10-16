@@ -27,6 +27,7 @@
   let lastTime = window.performance.now();
   let elapsed = 0;
   let frame;
+  let lastTimerExpirationDate = new Date();
 
   const s = mils => {
     return Math.floor(mils / 1000) % 60;
@@ -184,6 +185,10 @@
     document.addEventListener("keydown", keydownHandler);
   };
 
+  const formatTime = date => {
+    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  };
+
   // let stopKeyPresses = () => document.removeEventListener("keydown", keydownHandler);
 
   $: mainContentStyle =
@@ -201,6 +206,7 @@
       : "idle-timer";
 
   $: if (elapsed > 0 && elapsed >= milliseconds) {
+    lastTimerExpirationDate = new Date();
     resetContent();
   }
 </script>
@@ -331,7 +337,11 @@
   {/if}
 </div>
 
-<div class="version">{version}</div>
+{#if debug === 'off'}
+  <div class="version">
+    Last Timeout: {formatTime(lastTimerExpirationDate)} ({version})
+  </div>
+{/if}
 
 {#if debug !== 'off'}
   <div class="debug-version">{version}</div>
@@ -367,6 +377,10 @@
     <div>
       <strong>elapsed:</strong>
       {elapsed}
+    </div>
+    <div>
+      <strong>lastTimerExpirationDate:</strong>
+      {formatTime(lastTimerExpirationDate)}
     </div>
   </div>
 {/if}
