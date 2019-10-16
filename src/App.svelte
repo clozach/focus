@@ -6,7 +6,6 @@
   const debug = false;
 
   const modes = {
-    fresh: "fresh",
     idle: "idle",
     editingText: "editingText",
     countingDown: "countingDown",
@@ -18,9 +17,7 @@
     tab: "tab"
   };
 
-  // Simple state machine for `mode`
-  // fresh => editingText <=> countingDown <=> editingCountdownMinutes
-  let mode = "fresh";
+  let mode = "idle";
   let content = "";
   let milliseconds = 0;
   let countdownMinutes = 0;
@@ -70,7 +67,7 @@
       mode = modeFrom("return", mode);
     };
 
-    if (mode === modes.fresh) {
+    if (!document.fullscreenElement) {
       fullscreen();
       return;
     }
@@ -97,9 +94,6 @@
   function modeFrom(event, oldMode) {
     if (event === events.return) {
       switch (oldMode) {
-        case modes.fresh:
-          return modes.editingText;
-
         case modes.idle:
           return modes.editingText;
 
@@ -117,9 +111,6 @@
       }
     } else if (event === events.tab) {
       switch (oldMode) {
-        case modes.fresh:
-          return modes.fresh;
-
         case modes.idle:
           return modes.editingText;
 
