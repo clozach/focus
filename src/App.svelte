@@ -200,8 +200,8 @@
       ? "focussed-timer"
       : "idle-timer";
 
-  resetContent();
   $: if (elapsed > 0 && elapsed >= milliseconds) {
+    resetContent();
   }
 </script>
 
