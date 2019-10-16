@@ -135,7 +135,7 @@
 
   const resetContent = () => {
     content = "";
-    mode = modes.editingText;
+    mode = modes.idle;
     cancelAnimationFrame(frame);
   };
 
@@ -156,7 +156,10 @@
 
     if (isUninked.test(key)) return;
 
-    if (mode === modes.editingText) {
+    if (mode === modes.idle && content.length === 0) {
+      mode = modes.editingText;
+      content = content + key;
+    } else if (mode === modes.editingText) {
       content = content + key;
     } else if (mode === modes.editingCountdownMinutes && /^[0-9]$/.test(key)) {
       countdownMinutes = countdownMinutes == 0 ? key : countdownMinutes + key;
